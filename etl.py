@@ -23,7 +23,8 @@ def create_spark_session():
 
 
 def process_song_data(spark, input_data, output_data):
-    '''process the song data from AWS S3.'''
+    '''Process the song data from AWS S3 to song and artist tables.
+        These are stored on AWS S3 again.'''
     # get filepath to song data file
     song_data = 
     
