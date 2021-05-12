@@ -26,7 +26,7 @@ def process_song_data(spark, input_data, output_data):
     '''Process the song data from AWS S3 to song and artist tables.
         These are stored on AWS S3 again.'''
     # get filepath to song data file
-    song_data = 
+    song_data = 's3://udacity-dend/song_data'
     
     # read song data file
     df = 
@@ -41,13 +41,13 @@ def process_song_data(spark, input_data, output_data):
     artists_table = 
     
     # write artists table to parquet files
-    artists_table
+    artists_table = 
 
 
 def process_log_data(spark, input_data, output_data):
     '''Process log data from the AWS S3.'''
     # get filepath to log data file
-    log_data =
+    log_data = 's3://udacity-dend/log_data'
 
     # read log data file
     df = 
@@ -82,7 +82,7 @@ def process_log_data(spark, input_data, output_data):
     songplays_table = 
 
     # write songplays table to parquet files partitioned by year and month
-    songplays_table
+    songplays_table = 
 
 
 def main():
