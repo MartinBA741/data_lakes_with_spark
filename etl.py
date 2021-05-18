@@ -88,24 +88,36 @@ def process_log_data(spark, input_data, output_data):
     time_table.write.partitionBy('year', 'month').mode('overwrite').parquet(os.path.join(output_data, 'time'))
 
     # read in song data to use for songplays table
-     song_df = spark.read.json(input_data + 'song_data/*/*/*/*.json')
+    song_df = spark.read.json(input_data + 'song_data/*/*/*/*.json')
 
     # extract columns from joined song and log datasets to create songplays table 
-    songplays_table = df.select('songplay_id', 'start_time', 'user_id', 'level', 'song_id', 'artist_id', 'session_id', 'location', 'user_agent') 
+    # songplays_table = df.select('songplay_id', 'start_time', 'user_id', 'level', 'song_id', 'artist_id', 'session_id', 'location', 'user_agent') 
+
+    songplays_table = df.join(song_df, (df.artist == song_df.artist_name) & (df.title == song_df.song)) \
+        .select(col("start_time"),
+        col("userId").alias("user_id"),
+        col("level")
+        col("song_id"),
+        col("artist_id"),
+        col("sessionId").alias('session_id'),
+        col("artist_location").alias("location"),
+        col("userAgent").alias("user_agent")
+    )
+
 
     # write songplays table to parquet files partitioned by year and month (Note: Parquet is a columnar format)
-    songplays_table.write.parquet( , mode="overwrite")
+    songplays_table.write.partitionBy('year', 'month').mode('overwrite').parquet(os.path.join(output_data, 'songplays'))
 
 
 def main():
     '''Execute the previously defined functions.'''
     spark = create_spark_session()
-    input_data = "s3a://udacity-dend/"
-    output_data = ""
+    #input_data = "s3a://udacity-dend/"
+    #output_data = ""
     
     # Local test
-    # input_data = "C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data"
-    # output_data = "C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\outdata"
+    input_data = "C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data"
+    output_data = "C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\outdata"
     
     process_song_data(spark, input_data, output_data)    
     process_log_data(spark, input_data, output_data)
