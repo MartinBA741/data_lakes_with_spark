@@ -24,14 +24,6 @@ def create_spark_session():
         .getOrCreate()
     return spark
 
-def create_local_spark_session():
-    '''Create a local spark session for testing.'''
-    spark = SparkSession \
-        .builder \
-        .config("local") \
-        .getOrCreate()
-    return spark
-
 #%%
 
 def process_song_data(spark, input_data, output_data):
@@ -106,7 +98,7 @@ def process_log_data(spark, input_data, output_data):
     songplays_table = df.join(song_df, (df.artist == song_df.artist_name) & (df.title == song_df.song)) \
         .select(col("start_time"),
         col("userId").alias("user_id"),
-        col("level")
+        col("level"),
         col("song_id"),
         col("artist_id"),
         col("sessionId").alias('session_id'),
@@ -125,9 +117,7 @@ def main():
     #output_data = ""
     
     # Local test
-    #configure = SparkConf().setAppName('test_app').setMaster('local')
-    #spark = SparkContext(conf=configure)
-    #spark = spark = SparkSession.builder.getOrCreate()
+    #spark = SparkSession.builder.getOrCreate()
     #input_data = "C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data"
     #output_data = "C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\outdata"
     
