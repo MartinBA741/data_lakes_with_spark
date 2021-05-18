@@ -2,6 +2,8 @@
 import configparser
 from datetime import datetime
 import os
+from pyspark import SparkContext
+from pyspark.conf import SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf, col
 from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, date_format
@@ -19,6 +21,14 @@ def create_spark_session():
     spark = SparkSession \
         .builder \
         .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.0") \
+        .getOrCreate()
+    return spark
+
+def create_local_spark_session():
+    '''Create a local spark session for testing.'''
+    spark = SparkSession \
+        .builder \
+        .config("local") \
         .getOrCreate()
     return spark
 
@@ -104,20 +114,22 @@ def process_log_data(spark, input_data, output_data):
         col("userAgent").alias("user_agent")
     )
 
-
     # write songplays table to parquet files partitioned by year and month (Note: Parquet is a columnar format)
     songplays_table.write.partitionBy('year', 'month').mode('overwrite').parquet(os.path.join(output_data, 'songplays'))
 
 
 def main():
     '''Execute the previously defined functions.'''
-    spark = create_spark_session()
+    #spark = create_spark_session()
     #input_data = "s3a://udacity-dend/"
     #output_data = ""
     
     # Local test
-    input_data = "C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data"
-    output_data = "C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\outdata"
+    #configure = SparkConf().setAppName('test_app').setMaster('local')
+    #spark = SparkContext(conf=configure)
+    #spark = spark = SparkSession.builder.getOrCreate()
+    #input_data = "C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data"
+    #output_data = "C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\outdata"
     
     process_song_data(spark, input_data, output_data)    
     process_log_data(spark, input_data, output_data)
