@@ -30,7 +30,6 @@ def process_song_data(spark, input_data, output_data):
 
     # get filepath to song data file
     song_data = os.path.join(input_data, 'song_data/*/*/*/*.json')
-    #'s3://udacity-dend/song_data/*.json'
     
     # read song data file
     df = spark.read.json(song_data)
@@ -38,13 +37,13 @@ def process_song_data(spark, input_data, output_data):
     # extract columns to create songs table
     songs_table = df.select('song_id', 'title', 'artist_id', 'year', 'duration')
     
-    # write songs table to parquet files partitioned by year and artist
+    # write songs table to parquet files partitioned by year and artist (Note: Parquet is a columnar format)
     songs_table.write.partitionBy("year", "artist_id").mode('overwrite').parquet(os.path.join(output_data, 'songs'))
 
     # extract columns to create artists table
     artists_table = df.select('artist_id', 'name', 'location', 'lattitude', 'longitude')
     
-    # write artists table to parquet files
+    # write artists table to parquet files (Note: Parquet is a columnar format)
     artists_table.write.parquet(os.path.join(output_data, 'artists'))
 
 
@@ -54,7 +53,6 @@ def process_log_data(spark, input_data, output_data):
 
     # get filepath to log data file
     log_data = input_data + 'log_data/*/*/*.json'
-    #'s3://udacity-dend/log_data/*.json'
 
     # read log data file
     df = spark.read.json(log_data)
@@ -66,16 +64,16 @@ def process_log_data(spark, input_data, output_data):
     users_table = df.select('user_id', 'first_name', 'last_name', 'gender', 'level')
     users_table = users_table.dropDuplicates(['userId'])
 
-    # write users table to parquet files
+    # write users table to parquet files (Note: Parquet is a columnar format)
     users_table.write.parquet(os.path.join(output_data, 'users'))
 
     # create timestamp column from original timestamp column
-    get_timestamp = udf(lambda x: x/1000, IntegerType())
-    df = df.withColumn('start_time', get_timestamp('ts'))
+    get_timestamp = udf(lambda dt: format_datetime(int(dt)), TimestampType())
+    df = df.withColumn('timestamp', get_timestamp(df.ts))
     
     # create datetime column from original timestamp column
-    get_datetime = udf(lambda x: from_unixtime(x), TimestampType())
-    df = df.withColumn('datetime', from_unixtime('start_time'))
+    get_datetime = udf(lambda dt: format_datetime(int(dt)), DateType())
+    df = df.withColumn('datetime', get_datetime(df.ts))
     
     # extract columns to create time table
     time_table = df.withColumn("hour", hour("start_time"))           \
@@ -86,7 +84,7 @@ def process_log_data(spark, input_data, output_data):
                     .withColumn("weekday", dayofweek("start_time"))  \
                     .select("ts", "start_time", "hour", "day", "week", "month", "year", "weekday").drop_duplicates()
     
-    # write time table to parquet files partitioned by year and month
+    # write time table to parquet files partitioned by year and month (Note: Parquet is a columnar format)
     time_table.write.partitionBy('year', 'month').mode('overwrite').parquet(os.path.join(output_data, 'time'))
 
     # read in song data to use for songplays table
@@ -95,7 +93,7 @@ def process_log_data(spark, input_data, output_data):
     # extract columns from joined song and log datasets to create songplays table 
     songplays_table = df.select('songplay_id', 'start_time', 'user_id', 'level', 'song_id', 'artist_id', 'session_id', 'location', 'user_agent') 
 
-    # write songplays table to parquet files partitioned by year and month
+    # write songplays table to parquet files partitioned by year and month (Note: Parquet is a columnar format)
     songplays_table.write.parquet( , mode="overwrite")
 
 
@@ -104,6 +102,10 @@ def main():
     spark = create_spark_session()
     input_data = "s3a://udacity-dend/"
     output_data = ""
+    
+    # Local test
+    # input_data = "C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data"
+    # output_data = "C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\outdata"
     
     process_song_data(spark, input_data, output_data)    
     process_log_data(spark, input_data, output_data)
