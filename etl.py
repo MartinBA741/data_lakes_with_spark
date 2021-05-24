@@ -112,9 +112,9 @@ def process_log_data(spark, input_data, output_data):
 
 def main():
     '''Execute the previously defined functions.'''
-    #spark = create_spark_session()
-    #input_data = "s3a://udacity-dend/"
-    #output_data = ""
+    spark = create_spark_session()
+    input_data = "s3a://udacity-dend/"
+    output_data = "s3://aws-logs-662261384119-us-east-1/elasticmapreduce/"
     
     # Local test
     #spark = SparkSession.builder.getOrCreate()
