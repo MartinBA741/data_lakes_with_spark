@@ -1,4 +1,3 @@
-#%%
 import configparser
 from datetime import datetime
 import os
@@ -24,7 +23,6 @@ def create_spark_session():
         .getOrCreate()
     return spark
 
-#%%
 
 def process_song_data(spark, input_data, output_data):
     ''' Process the song data from AWS S3 to song and artist tables.
@@ -93,8 +91,6 @@ def process_log_data(spark, input_data, output_data):
     song_df = spark.read.json(input_data + 'song_data/*/*/*/*.json')
 
     # extract columns from joined song and log datasets to create songplays table 
-    # songplays_table = df.select('songplay_id', 'start_time', 'user_id', 'level', 'song_id', 'artist_id', 'session_id', 'location', 'user_agent') 
-
     songplays_table = df.join(song_df, (df.artist == song_df.artist_name) & (df.title == song_df.song)) \
         .select(col("start_time"),
         col("userId").alias("user_id"),
@@ -112,14 +108,15 @@ def process_log_data(spark, input_data, output_data):
 
 def main():
     '''Execute the previously defined functions.'''
-    spark = create_spark_session()
-    input_data = "s3a://udacity-dend/"
-    output_data = "s3://aws-logs-662261384119-us-east-1/elasticmapreduce/"
+    #spark = create_spark_session()
+    #input_data = "s3a://udacity-dend/"
+    #output_data = "s3://aws-logs-662261384119-us-east-1/elasticmapreduce/"
     
     # Local test
     #spark = SparkSession.builder.getOrCreate()
-    #input_data = "C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data"
-    #output_data = "C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\outdata"
+    spark = SparkSession.builder.master("local[2]").appName('localTest').getOrCreate()
+    input_data = r"C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data"
+    output_data = r"C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data\outdata"
     
     process_song_data(spark, input_data, output_data)    
     process_log_data(spark, input_data, output_data)
