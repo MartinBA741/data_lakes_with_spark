@@ -9,12 +9,16 @@ The ETL pipeline processes data using Spark enabeling the pipeline to be deploye
 
 ## Data Lake Design
 The data lake design is as follows:
+
+### Fact Table:
+* songsplay_table: partitioned by year and month
+    - Variables: 'year', 'month', start_time', 'user_id', level', song_id', artist_id', 'session_id', artist_location', 'location', 'userAgent'
+
+### Dimension Tables
 * songs_table: partitioned by year and artist_id
     - Variables: 'year', 'artist_id', 'song_id', 'title', 'duration'   
 * time_table: partitioned by year and month
     - Variables: 'year', 'month', 'ts', 'start_time', 'hour', 'day', 'week', 'weekday'
-* songsplay_table: partitioned by year and month
-    - Variables: 'year', 'month', start_time', 'user_id', level', song_id', artist_id', 'session_id', artist_location', 'location', 'userAgent'
 * artists_table 
     - Variables: 'artist_id', 'name', 'location', 'lattitude', 'longitude'
 * user_table
