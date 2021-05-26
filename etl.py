@@ -26,7 +26,11 @@ def create_spark_session():
 
 def process_song_data(spark, input_data, output_data):
     ''' Process the song data from AWS S3 to song and artist tables.
-        These are stored on AWS S3 again.'''
+        These are stored on AWS S3 again.
+        Args:
+        - spark (spark session object): a Spark session
+        - input_data (string): directory containing the data used as input
+        - output_data (string): a directory where the output tables should be stored'''
 
     # get filepath to song data file
     song_data = os.path.join(input_data, 'song_data/*/*/*/*.json')
@@ -49,7 +53,11 @@ def process_song_data(spark, input_data, output_data):
 
 
 def process_log_data(spark, input_data, output_data):
-    '''Process log data from the AWS S3.'''
+    '''Process log data from the AWS S3.
+    Args:
+        - spark (spark session object): a Spark session
+        - input_data (string): directory containing the data used as input
+        - output_data (string): a directory where the output tables should be stored'''
 
     # get filepath to log data file
     log_data = input_data + 'log_data/*/*/*.json'
@@ -109,14 +117,14 @@ def process_log_data(spark, input_data, output_data):
 def main():
     '''Execute the previously defined functions.'''
     #spark = create_spark_session()
-    #input_data = "s3a://udacity-dend/"
-    #output_data = "s3://aws-logs-662261384119-us-east-1/elasticmapreduce/"
+    input_data = "s3a://udacity-dend/"
+    output_data = "s3://aws-logs-662261384119-us-east-1/elasticmapreduce/"
     
     # Local test
     #spark = SparkSession.builder.getOrCreate()
-    spark = SparkSession.builder.master("local[2]").appName('localTest').getOrCreate()
-    input_data = r"C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data"
-    output_data = r"C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data\outdata"
+    #spark = SparkSession.builder.master("local[2]").appName('localTest').getOrCreate()
+    #input_data = r"C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data"
+    #output_data = r"C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data\outdata"
     
     process_song_data(spark, input_data, output_data)    
     process_log_data(spark, input_data, output_data)
