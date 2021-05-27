@@ -2,11 +2,11 @@ import configparser
 from datetime import datetime
 import os
 from pyspark import SparkContext
+from pyspark import conf
 from pyspark.conf import SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf, col
 from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, date_format
-
 
 config = configparser.ConfigParser()
 config.read('dl.cfg')
@@ -116,13 +116,13 @@ def process_log_data(spark, input_data, output_data):
 
 def main():
     '''Execute the previously defined functions.'''
-    #spark = create_spark_session()
+    spark = create_spark_session()
     input_data = "s3a://udacity-dend/"
     output_data = "s3://aws-logs-662261384119-us-east-1/elasticmapreduce/"
     
     # Local test
     #spark = SparkSession.builder.getOrCreate()
-    #spark = SparkSession.builder.master("local[2]").appName('localTest').getOrCreate()
+    #spark = SparkSession.builder.master("local[1]").appName('localTest').getOrCreate()
     #input_data = r"C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data"
     #output_data = r"C:\Users\Ma-Bi\OneDrive\joyfulWorld\Data Engineering\Spark_data_lakes\data_lakes_with_spark\data\outdata"
     
