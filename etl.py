@@ -33,7 +33,7 @@ def process_song_data(spark, input_data, output_data):
         - output_data (string): a directory where the output tables should be stored'''
 
     # get filepath to song data file
-    song_data = os.path.join(input_data, 'song_data/*/*/*/*.json')
+    song_data = os.path.join(input_data, 'song-data/*/*/*/*.json')
     
     # read song data file
     df = spark.read.json(song_data)
@@ -62,7 +62,7 @@ def process_log_data(spark, input_data, output_data):
         - output_data (string): a directory where the output tables should be stored'''
 
     # get filepath to log data file
-    log_data = input_data + 'log_data/*/*/*.json'
+    log_data = input_data + 'log-data/*/*/*.json'
 
     # read log data file
     df = spark.read.json(log_data)
@@ -98,7 +98,7 @@ def process_log_data(spark, input_data, output_data):
     time_table.write.partitionBy('year', 'month').mode('overwrite').parquet(os.path.join(output_data, 'time'))
 
     # read in song data to use for songplays table
-    song_df = spark.read.json(input_data + 'song_data/*/*/*/*.json')
+    song_df = spark.read.json(input_data + 'song-data/*/*/*/*.json')
 
     # extract columns from joined song and log datasets to create songplays table 
     songplays_table = df.join(song_df, (df.artist == song_df.artist_name) & (df.title == song_df.song)) \
